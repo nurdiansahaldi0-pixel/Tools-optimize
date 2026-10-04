@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0,user-scalable=no">
+
+<title>Hasbi Optimizer</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    margin:0;
+    background:#07090d;
+    color:white;
+    font-family:Arial,sans-serif;
+    touch-action:manipulation;
+}
+
+.container{
+    width:100%;
+    max-width:500px;
+    margin:auto;
+    padding:16px;
+}
+
+.header{
+    text-align:center;
+    padding:10px 0 18px;
+}
+
+.logo{
+    font-size:40px;
+}
+
+.title{
+    font-size:25px;
+    font-weight:800;
+}
+
+.subtitle{
+    color:#8b93a2;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.card{
+    background:#131720;
+    border:1px solid #252b36;
+    border-radius:18px;
+    padding:17px;
+    margin-bottom:14px;
+}
+
+.card-title{
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.value{
+    text-align:center;
+    font-size:42px;
+    font-weight:800;
+    margin:8px 0;
+}
+
+.value span{
+    font-size:15px;
+    color:#8e96a5;
+}
+
+input[type=range]{
+    width:100%;
+    height:7px;
+    appearance:none;
+    background:#292f3a;
+    border-radius:10px;
+    outline:none;
+}
+
+input[type=range]::-webkit-slider-thumb{
+    appearance:none;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:#2583ff;
+    border:3px solid white;
+}
+
+input[type=range]::-moz-range-thumb{
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:#2583ff;
+    border:3px solid white;
+}
+
+.range-label{
+    display:flex;
+    justify-content:space-between;
+    color:#7f8795;
+    font-size:11px;
+    margin-top:7px;
+}
+
+button{
+    width:100%;
+    border:0;
+    border-radius:12px;
+    padding:14px;
+    margin-top:9px;
+    color:white;
+    background:#252b36;
+    font-weight:bold;
+    font-size:14px;
+}
+
+button:active{
+    transform:scale(.97);
+}
+
+.primary{
+    background:#1976ff;
+}
+
+.success{
+    background:#159c64;
+}
+
+.preset-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+}
+
+.preset-grid button{
+    margin:0;
+}
+
+.info{
+    background:#0b0e14;
+    border-radius:12px;
+    padding:12px;
+    color:#aeb6c3;
+    font-size:12px;
+    line-height:1.5;
+    margin-top:12px;
+}
+
+.test-area{
+    height:240px;
+    border-radius:15px;
+    background:#090c11;
+    border:2px dashed #303846;
+    position:relative;
+    overflow:hidden;
+    touch-action:none;
+}
+
+.crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:34px;
+    height:34px;
+    border:2px solid white;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+}
+
+.crosshair:before{
+    content:"";
+    position:absolute;
+    width:55px;
+    height:2px;
+    background:white;
+    left:-12px;
+    top:14px;
+}
+
+.crosshair:after{
+    content:"";
+    position:absolute;
+    width:2px;
+    height:55px;
+    background:white;
+    left:14px;
+    top:-12px;
+}
+
+.target{
+    width:24px;
+    height:24px;
+    border:3px solid #ffc857;
+    border-radius:50%;
+    position:absolute;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+}
+
+.dot{
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:#2583ff;
+    position:absolute;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    box-shadow:0 0 15px rgba(37,131,255,.8);
+}
+
+.stat{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid #252b36;
+}
+
+.stat:last-child{
+    border-bottom:0;
+}
+
+.blue{
+    color:#4da3ff;
+}
+
+.green{
+    color:#35d98b;
+}
+
+.yellow{
+    color:#ffc857;
+}
+
+.footer{
+    text-align:center;
+    color:#555d69;
+    font-size:11px;
+    padding:5px 0 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <div class="logo">🎮</div>
+    <div class="title">HASBI OPTIMIZER</div>
+    <div class="subtitle">
+        Touch & Sensitivity Controller
+    </div>
+</div>
+
+
+<!-- SENSITIVITY -->
+
+<div class="card">
+
+<div class="card-title">
+🎯 SENSITIVITY
+</div>
+
+<div class="value">
+<span id="sensValue">100</span>
+</div>
+
+<input
+type="range"
+id="sensSlider"
+min="0"
+max="200"
+value="100"
+oninput="updateSensitivity()">
+
+<div class="range-label">
+<span>0</span>
+<span>100</span>
+<span>200</span>
+</div>
+
+<div class="info">
+Sensitivity web: <b id="sensText">100</b><br>
+Semakin tinggi nilainya, semakin besar respons gerakan pointer/jari di area test.
+</div>
+
+</div>
+
+
+<!-- TOUCH -->
+
+<div class="card">
+
+<div class="card-title">
+👆 TOUCH RESPONSE
+</div>
+
+<div class="value">
+<span id="touchValue">100</span>
+</div>
+
+<input
+type="range"
+id="touchSlider"
+min="0"
+max="200"
+value="100"
+oninput="updateTouch()">
+
+<div class="range-label">
+<span>0</span>
+<span>100</span>
+<span>200</span>
+</div>
+
+<div class="info">
+Touch response: <b id="touchText">100</b><br>
+Nilai ini mengatur respons simulasi pointer di area pengujian.
+</div>
+
+</div>
+
+
+<!-- PRESET -->
+
+<div class="card">
+
+<div class="card-title">
+⚙️ PRESET
+</div>
+
+<div class="preset-grid">
+
+<button onclick="preset('smooth')">
+SMOOTH
+</button>
+
+<button onclick="preset('balanced')">
+BALANCED
+</button>
+
+<button onclick="preset('fast')">
+FAST
+</button>
+
+<button onclick="preset('custom')">
+CUSTOM
+</button>
+
+</div>
+
+<button
+class="primary"
+onclick="applySettings()">
+✓ APPLY SETTINGS
+</button>
+
+<button
+onclick="resetSettings()">
+RESET
+</button>
+
+</div>
+
+
+<!-- TEST -->
+
+<div class="card">
+
+<div class="card-title">
+🧪 TOUCH & SENSITIVITY TEST
+</div>
+
+<div
+class="test-area"
+id="testArea">
+
+<div class="crosshair"></div>
+<div class="target" id="target"></div>
+
+</div>
+
+<div class="info" id="testInfo">
+Sentuh dan gerakkan jari di area tersebut.
+</div>
+
+</div>
+
+
+<!-- STATUS -->
+
+<div class="card">
+
+<div class="card-title">
+📊 CURRENT SETTINGS
+</div>
+
+<div class="stat">
+<span>Sensitivity</span>
+<span class="blue" id="statusSens">
+100
+</span>
+</div>
+
+<div class="stat">
+<span>Touch Response</span>
+<span class="blue" id="statusTouch">
+100
+</span>
+</div>
+
+<div class="stat">
+<span>Preset</span>
+<span class="green" id="statusPreset">
+Custom
+</span>
+</div>
+
+</div>
+
+
+<div class="footer">
+Hasbi Optimizer Web Edition
+</div>
+
+</div>
+
+
+<script>
+
+let sensitivity = 100;
+let touchResponse = 100;
+let currentPreset = "Custom";
+
+let lastX = null;
+let lastY = null;
+let totalDistance = 0;
+let touchCount = 0;
+
+
+/* =====================
+   SENSITIVITY
+===================== */
+
+function updateSensitivity(){
+
+    sensitivity =
+        Number(
+            document.getElementById(
+                "sensSlider"
+            ).value
+        );
+
+    document.getElementById(
+        "sensValue"
+    ).innerText =
+        sensitivity;
+
+    document.getElementById(
+        "sensText"
+    ).innerText =
+        sensitivity;
+
+}
+
+
+/* =====================
+   TOUCH
+===================== */
+
+function updateTouch(){
+
+    touchResponse =
+        Number(
+            document.getElementById(
+                "touchSlider"
+            ).value
+        );
+
+    document.getElementById(
+        "touchValue"
+    ).innerText =
+        touchResponse;
+
+    document.getElementById(
+        "touchText"
+    ).innerText =
+        touchResponse;
+
+}
+
+
+/* =====================
+   PRESET
+===================== */
+
+function preset(type){
+
+    if(type === "smooth"){
+
+        sensitivity = 70;
+        touchResponse = 80;
+        currentPreset = "Smooth";
+
+    }
+
+    if(type === "balanced"){
+
+        sensitivity = 100;
+        touchResponse = 100;
+        currentPreset = "Balanced";
+
+    }
+
+    if(type === "fast"){
+
+        sensitivity = 150;
+        touchResponse = 160;
+        currentPreset = "Fast";
+
+    }
+
+    if(type === "custom"){
+
+        currentPreset = "Custom";
+
+    }
+
+    document.getElementById(
+        "sensSlider"
+    ).value = sensitivity;
+
+    document.getElementById(
+        "touchSlider"
+    ).value = touchResponse;
+
+    updateSensitivity();
+    updateTouch();
+
+}
+
+
+/* =====================
+   APPLY
+===================== */
+
+function applySettings(){
+
+    localStorage.setItem(
+        "hasbiSensitivity",
+        sensitivity
+    );
+
+    localStorage.setItem(
+        "hasbiTouch",
+        touchResponse
+    );
+
+    localStorage.setItem(
+        "hasbiPreset",
+        currentPreset
+    );
+
+    document.getElementById(
+        "statusSens"
+    ).innerText =
+        sensitivity;
+
+    document.getElementById(
+        "statusTouch"
+    ).innerText =
+        touchResponse;
+
+    document.getElementById(
+        "statusPreset"
+    ).innerText =
+        currentPreset;
+
+    document.getElementById(
+        "testInfo"
+    ).innerHTML =
+        "✓ Settings diterapkan.<br>" +
+        "Sensitivity: " +
+        sensitivity +
+        " | Touch: " +
+        touchResponse;
+
+}
+
+
+/* =====================
+   RESET
+===================== */
+
+function resetSettings(){
+
+    sensitivity = 100;
+    touchResponse = 100;
+    currentPreset = "Custom";
+
+    document.getElementById(
+        "sensSlider"
+    ).value = 100;
+
+    document.getElementById(
+        "touchSlider"
+    ).value = 100;
+
+    updateSensitivity();
+    updateTouch();
+    applySettings();
+
+}
+
+
+/* =====================
+   TEST AREA
+===================== */
+
+const area =
+    document.getElementById(
+        "testArea"
+    );
+
+const testInfo =
+    document.getElementById(
+        "testInfo"
+    );
+
+const target =
+    document.getElementById(
+        "target"
+    );
+
+
+function moveTarget(){
+
+    const rect =
+        area.getBoundingClientRect();
+
+    const x =
+        20 +
+        Math.random() *
+        (rect.width - 40);
+
+    const y =
+        20 +
+        Math.random() *
+        (rect.height - 40);
+
+    target.style.left =
+        x + "px";
+
+    target.style.top =
+        y + "px";
+
+}
+
+
+function addDot(x,y){
+
+    const dot =
+        document.createElement(
+            "div"
+        );
+
+    dot.className = "dot";
+
+    dot.style.left =
+        x + "px";
+
+    dot.style.top =
+        y + "px";
+
+    area.appendChild(dot);
+
+    setTimeout(
+        () => dot.remove(),
+        250
+    );
+
+}
+
+
+/* =====================
+   POINTER DOWN
+===================== */
+
+area.addEventListener(
+    "pointerdown",
+    function(e){
+
+        const rect =
+            area.getBoundingClientRect();
+
+        lastX = e.clientX;
+        lastY = e.clientY;
+
+        touchCount++;
+
+        addDot(
+            e.clientX - rect.left,
+            e.clientY - rect.top
+        );
+
+        moveTarget();
+
+    }
+);
+
+
+/* =====================
+   POINTER MOVE
+===================== */
+
+area.addEventListener(
+    "pointermove",
+    function(e){
+
+        if(lastX === null)
+            return;
+
+        const dx =
+            e.clientX - lastX;
+
+        const dy =
+            e.clientY - lastY;
+
+        const distance =
+            Math.sqrt(
+                dx * dx +
+                dy * dy
+            );
+
+        totalDistance +=
+            distance *
+            (sensitivity / 100);
+
+        lastX =
+            e.clientX;
+
+        lastY =
+            e.clientY;
+
+        const speed =
+            distance *
+            (touchResponse / 100);
+
+        testInfo.innerHTML =
+            "Sensitivity: <b>" +
+            sensitivity +
+            "</b><br>" +
+
+            "Touch Response: <b>" +
+            touchResponse +
+            "</b><br>" +
+
+            "Movement: <b>" +
+            totalDistance.toFixed(0) +
+            " px</b><br>" +
+
+            "Response: <b>" +
+            speed.toFixed(1) +
+            "</b>";
+
+        addDot(
+            e.clientX - rect.left,
+            e.clientY - rect.top
+        );
+
+    }
+);
+
+
+/* =====================
+   POINTER UP
+===================== */
+
+area.addEventListener(
+    "pointerup",
+    function(){
+
+        lastX = null;
+        lastY = null;
+
+    }
+);
+
+
+/* =====================
+   LOAD SAVED SETTINGS
+===================== */
+
+function loadSettings(){
+
+    const savedSens =
+        localStorage.getItem(
+            "hasbiSensitivity"
+        );
+
+    const savedTouch =
+        localStorage.getItem(
+            "hasbiTouch"
+        );
+
+    const savedPreset =
+        localStorage.getItem(
+            "hasbiPreset"
+        );
+
+    if(savedSens !== null)
+        sensitivity =
+            Number(savedSens);
+
+    if(savedTouch !== null)
+        touchResponse =
+            Number(savedTouch);
+
+    if(savedPreset !== null)
+        currentPreset =
+            savedPreset;
+
+    document.getElementById(
+        "sensSlider"
+    ).value =
+        sensitivity;
+
+    document.getElementById(
+        "touchSlider"
+    ).value =
+        touchResponse;
+
+    updateSensitivity();
+    updateTouch();
+
+    document.getElementById(
+        "statusSens"
+    ).innerText =
+        sensitivity;
+
+    document.getElementById(
+        "statusTouch"
+    ).innerText =
+        touchResponse;
+
+    document.getElementById(
+        "statusPreset"
+    ).innerText =
+        currentPreset;
+
+}
+
+
+/* START */
+
+loadSettings();
+moveTarget();
+
+</script>
+
+</body>
+</html>
